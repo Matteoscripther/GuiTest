@@ -1,0 +1,65 @@
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+
+local isScriptEnabled = true
+
+-- Función para actualizar las etiquetas de nombre
+local function updateNameTags()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Character then
+            local head = player.Character:FindFirstChild("Head")
+            if head then
+                local nameTag = head:FindFirstChild("NameTag")
+                if nameTag then
+                    nameTag:Destroy()
+                end
+
+                if isScriptEnabled then
+                    local billboardGui = Instance.new("BillboardGui")
+                    billboardGui.Name = "NameTag"
+                    billboardGui.Adornee = head
+                    billboardGui.Size = UDim2.new(0, 200, 0, 50)
+                    billboardGui.StudsOffset = Vector3.new(0, 2, 0)
+                    billboardGui.AlwaysOnTop = true
+
+                    local textLabel = Instance.new("TextLabel")
+                    textLabel.Parent = billboardGui
+                    textLabel.Size = UDim2.new(1, 0, 1, 0)
+                    textLabel.BackgroundTransparency = 1
+                    textLabel.Text = player.Name
+                    textLabel.TextColor3 = Color3.fromRGB(139, 0, 139) -- Color rosado oscuro
+                    textLabel.TextStrokeTransparency = 0.5
+                    textLabel.Font = Enum.Font.SourceSansBold
+                    textLabel.TextSize = 14
+
+                    billboardGui.Parent = head
+                end
+            end
+        end
+    end
+end
+
+-- Conectar eventos para actualizar etiquetas de nombre
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        updateNameTags()
+    end)
+end)
+
+updateNameTags()
+
+-- Update ESP when new players join
+players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        if espEnabled then
+            createESP(player)
+        end
+    end)
+end)
+
+-- Initial ESP setup for existing players
+for _, player in pairs(players:GetPlayers()) do
+    if player ~= localPlayer and player.Character then
+        createESP(player)
+    end
+end
